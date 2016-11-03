@@ -132,7 +132,7 @@ class Config
         {
             throw new ConfigException(ConfigException::USER_ERROR_MESSAGE, ConfigException::USER_ERROR_CODE);
         }
-        if (!empty($this->ip) && false === filter_var($this->ip, FILTER_VALIDATE_IP))
+        if (!empty($this->ip) && false === is_string($this->ip))
         {
             throw new ConfigException(ConfigException::IP_ERROR_MESSAGE, ConfigException::IP_ERROR_CODE);
         }
