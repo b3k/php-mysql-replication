@@ -116,9 +116,9 @@ class RowEvent extends EventCommon
         $data['column_types'] = $this->binaryDataReader->read($data['columns_amount']);
 
         // automatically clear table cache to save memory
-        if (count(self::$tableMapCache) >= 128)
+        if (count(self::$tableMapCache) >= 1024)
         {
-            self::$tableMapCache = array_slice(self::$tableMapCache, 64, -1, true);
+            self::$tableMapCache = array_slice(self::$tableMapCache, 512, -1, true);
         }
 
         // already in cache don't parse
