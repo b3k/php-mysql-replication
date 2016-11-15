@@ -34,21 +34,38 @@ class MySQLRepository
     {
         $sql = '
             SELECT
-                `COLUMN_NAME`,
-                `COLLATION_NAME`,
-                `CHARACTER_SET_NAME`,
-                `COLUMN_COMMENT`,
-                `COLUMN_TYPE`,
-                `COLUMN_KEY`
+                `c`.`COLUMN_NAME`,
+                `c`.`COLLATION_NAME`,
+                `c`.`CHARACTER_SET_NAME`,
+                `c`.`COLUMN_COMMENT`,
+                `c`.`COLUMN_TYPE`,
+                `c`.`COLUMN_KEY`,
+                `kcu`.`REFERENCED_TABLE_NAME`,
+                `kcu`.`REFERENCED_COLUMN_NAME`
             FROM
-                `information_schema`.`columns`
-            WHERE
+                `information_schema`.`columns` AS `c`
+            LEFT JOIN
+                (SELECT
+                    `REFERENCED_TABLE_NAME`,
+                    `REFERENCED_COLUMN_NAME`,
+                    `COLUMN_NAME`,
+                    `TABLE_SCHEMA`,
+                    `TABLE_NAME`
+                FROM
+                    `information_schema`.`key_column_usage`
+                WHERE
                     `table_schema` = ?
-                AND
-                    `table_name` = ?
+                    AND `table_name` = ?
+                    AND `referenced_table_schema` IS NOT NULL
+                    AND `referenced_table_name` IS NOT NULL
+                ) AS `kcu`
+            USING (`column_name`, `table_schema`, `table_name`)
+            WHERE
+                `c`.`table_schema` = ?
+                AND `c`.`table_name` = ?
        ';
 
-        return $this->getConnection()->fetchAll($sql, [$schema, $table]);
+        return $this->getConnection()->fetchAll($sql, [$schema, $table, $schema, $table]);
     }
 
     /**
