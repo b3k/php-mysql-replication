@@ -97,16 +97,16 @@ class Event
             }
 
             if (in_array($eventInfo->getType(), [ConstEventType::UPDATE_ROWS_EVENT_V1, ConstEventType::UPDATE_ROWS_EVENT_V2], true)) {
-                if ($rowEvent = $this->rowEventService->makeRowEvent($binaryDataReader, $eventInfo)) {
-                    $this->eventDispatcher->dispatch(ConstEventsNames::UPDATE, $rowEvent->makeUpdateRowsDTO());   
+                if ($rowEvent = $this->rowEventService->makeRowEvent($binaryDataReader, $eventInfo)->makeUpdateRowsDTO()) {
+                    $this->eventDispatcher->dispatch(ConstEventsNames::UPDATE, $rowEvent);   
                 }
             } elseif (in_array($eventInfo->getType(), [ConstEventType::WRITE_ROWS_EVENT_V1, ConstEventType::WRITE_ROWS_EVENT_V2], true)) {
-                if ($rowEvent = $this->rowEventService->makeRowEvent($binaryDataReader, $eventInfo)) {
-                    $this->eventDispatcher->dispatch(ConstEventsNames::WRITE, $rowEvent->makeWriteRowsDTO());
+                if ($rowEvent = $this->rowEventService->makeRowEvent($binaryDataReader, $eventInfo)->makeWriteRowsDTO()) {
+                    $this->eventDispatcher->dispatch(ConstEventsNames::WRITE, $rowEvent);
                 }
             } elseif (in_array($eventInfo->getType(), [ConstEventType::DELETE_ROWS_EVENT_V1, ConstEventType::DELETE_ROWS_EVENT_V2], true)) {
-                if ($rowEvent = $this->rowEventService->makeRowEvent($binaryDataReader, $eventInfo)) {
-                    $this->eventDispatcher->dispatch(ConstEventsNames::DELETE, $rowEvent->makeDeleteRowsDTO());
+                if ($rowEvent = $this->rowEventService->makeRowEvent($binaryDataReader, $eventInfo)->makeDeleteRowsDTO()) {
+                    $this->eventDispatcher->dispatch(ConstEventsNames::DELETE, $rowEvent);
                 }
             } elseif (ConstEventType::XID_EVENT === $eventInfo->getType()) {
                 $this->eventDispatcher->dispatch(ConstEventsNames::XID, (new XidEvent($eventInfo, $binaryDataReader))->makeXidDTO());
