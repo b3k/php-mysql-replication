@@ -4,7 +4,7 @@ namespace MySQLReplication\Event;
 
 use MySQLReplication\BinaryDataReader\BinaryDataReaderService;
 use MySQLReplication\BinaryDataReader\Exception\BinaryDataReaderException;
-use MySQLReplication\BinLog\BinLogConnect;
+use MySQLReplication\BinLog\BinLogConnectInterface;
 use MySQLReplication\BinLog\Exception\BinLogException;
 use MySQLReplication\Config\Config;
 use MySQLReplication\Definitions\ConstEventsNames;
@@ -19,7 +19,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class Event
 {
     /**
-     * @var BinLogConnect
+     * @var BinLogConnectInterface
      */
     private $binLogConnect;
     /**
@@ -42,14 +42,14 @@ class Event
     /**
      * BinLogPack constructor.
      * @param Config $config
-     * @param BinLogConnect $binLogConnect
+     * @param BinLogConnectInterface $binLogConnect
      * @param BinaryDataReaderService $packageService
      * @param RowEventService $rowEventService
      * @param EventDispatcher $eventDispatcher
      */
     public function __construct(
         Config $config,
-        BinLogConnect $binLogConnect,
+        BinLogConnectInterface $binLogConnect,
         BinaryDataReaderService $packageService,
         RowEventService $rowEventService,
         EventDispatcher $eventDispatcher

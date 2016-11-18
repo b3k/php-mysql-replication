@@ -8,6 +8,7 @@ use Doctrine\DBAL\DriverManager;
 use MySQLReplication\BinaryDataReader\BinaryDataReaderService;
 use MySQLReplication\BinLog\BinLogAuth;
 use MySQLReplication\BinLog\BinLogConnect;
+use MySQLReplication\BinLog\BinLogConnectInterface;
 use MySQLReplication\BinLog\Exception\BinLogException;
 use MySQLReplication\Config\Config;
 use MySQLReplication\Config\Exception\ConfigException;
@@ -34,7 +35,7 @@ class MySQLReplicationFactory
      */
     private $MySQLRepository;
     /**
-     * @var BinLogConnect
+     * @var BinLogConnectInterface
      */
     private $binLogConnect;
     /**
@@ -80,12 +81,12 @@ class MySQLReplicationFactory
         $this->binLogAuth = new BinLogAuth();
         $this->MySQLRepository = new MySQLRepository($this->connection);
         $this->GtiService = new GtidService();
-        $this->binLogConnect = new BinLogConnect($config, $this->MySQLRepository, $this->binLogAuth, $this->GtiService);
-        $this->binLogConnect->connectToStream();
+        $this->binLogConnect = $this->getBinLogConnect($config);
         $this->binaryDataReaderService = new BinaryDataReaderService();
         $this->rowEventService = new RowEventService($config, $this->MySQLRepository);
         $this->eventDispatcher = new EventDispatcher();
         $this->event = new Event($config, $this->binLogConnect, $this->binaryDataReaderService, $this->rowEventService, $this->eventDispatcher);
+        $this->binLogConnect->connectToStream($this);
     }
 
     /**
@@ -110,5 +111,38 @@ class MySQLReplicationFactory
     public function binLogEvent()
     {
         $this->event->consume();
+    }
+
+    /**
+     * @return MySQLRepository
+     */
+    protected function getMySQLRepository()
+    {
+        return $this->MySQLRepository;
+    }
+
+    /**
+     * @return BinLogAuth
+     */
+    protected function getBinLogAuth()
+    {
+        return $this->binLogAuth;
+    }
+
+    /**
+     * @return GtidService
+     */
+    protected function getGtiService()
+    {
+        return $this->GtiService;
+    }
+
+    /**
+     * @param Config $config
+     * @return BinLogConnect
+     */
+    protected function getBinLogConnect(Config $config)
+    {
+        return new BinLogConnect($config, $this->MySQLRepository, $this->binLogAuth, $this->GtiService);
     }
 }
