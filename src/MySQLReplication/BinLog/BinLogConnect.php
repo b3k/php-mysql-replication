@@ -7,13 +7,14 @@ use MySQLReplication\Config\Config;
 use MySQLReplication\Definitions\ConstCapabilityFlags;
 use MySQLReplication\Definitions\ConstCommand;
 use MySQLReplication\Gtid\GtidService;
+use MySQLReplication\MySQLReplicationFactory;
 use MySQLReplication\Repository\MySQLRepository;
 
 /**
  * Class BinLogConnect
  * @package MySQLReplication\BinLog
  */
-class BinLogConnect
+class BinLogConnect implements BinLogConnectInterface
 {
     /**
      * @var resource
@@ -87,7 +88,7 @@ class BinLogConnect
     /**
      * @throws BinLogException
      */
-    public function connectToStream()
+    public function connectToStream(MySQLReplicationFactory $factory)
     {
         if (false === ($this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)))
         {
